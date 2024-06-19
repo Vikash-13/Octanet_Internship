@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  
+
+</head>
+<body>
+  <div class="container"><h1>To Do App</h1>
+    <div class="nav">
+      <a href="home.html">Home</a>
+      <a href="index.html">Add Task</a>
+      <a href="#comp">Completed</a>
+      <a href="#">Category</a>
+      <!-- <input type="search" placeholder="Search tasks" style="align-self: self-end;">
+      <button style="margin: 10px;">search</button> -->
+    </div>
+    <h2>Task To Complete</h2>
+    <ul id="task-list">
+    </ul>
+    <h2 class="comp" id="comp">Completed</h2>
+    <ul id="completed-list">
+    </ul>
+    <script>
+      const list = document.getElementById('task-list');
+      const completedList = document.getElementById('completed-list');
+
+      const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+
+        const icon = document.createElement('i');
+        icon.classList.add("fa-circle-check");
+        icon.classList.add("fa-regular");
+        icon.classList.add("completed");
+
+        const delicon = document.createElement('i');
+        delicon.classList.add("fa-solid");
+        delicon.classList.add("fa-trash");
+        delicon.classList.add("delete");
+
+        li.textContent = task;
+        list.appendChild(li);
+        li.appendChild(icon);
+        li.appendChild(delicon);
+
+        // Move a list to completed section on click completed icon
+        icon.addEventListener('click', (event) => {
+          const listItem = event.target.parentElement;
+          const taskIndex = tasks.indexOf(task);
+          tasks.splice(taskIndex, 1);
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+          completedList.appendChild(listItem);
+          localStorage.setItem('completedTasks', JSON.stringify([...completedTasks, task]));
+          icon.removeEventListener('click', arguments.callee);
+        });
+
+        // delete a list on click delete icon
+        delicon.addEventListener('click', (event) => {
+          const listItem = event.target.parentElement;
+          if (listItem.parentNode === list) {
+            list.removeChild(listItem);
+            const taskIndex = tasks.indexOf(task);
+            tasks.splice(taskIndex, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+          } else {
+            completedList.removeChild(listItem);
+            const taskIndex = completedTasks.indexOf(task);
+            completedTasks.splice(taskIndex, 1);
+            localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+          }
+        });
+      });
+
+      completedTasks.forEach(task => {
+        const li = document.createElement('li');
+        li.textContent = task;
+
+        const delicon = document.createElement('i');
+        delicon.classList.add("fa-solid");
+        delicon.classList.add("fa-trash");
+        delicon.classList.add("delete");
+
+        li.appendChild(delicon);
+
+        completedList.appendChild(li);
+
+        delicon.addEventListener('click', (event) => {
+          const listItem = event.target.parentElement;
+          completedList.removeChild(listItem);
+          const taskIndex = completedTasks.indexOf(task);
+          completedTasks.splice(taskIndex, 1);
+          localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+        });
+      });
+
+    </script>
+
+</body>
+</html>
